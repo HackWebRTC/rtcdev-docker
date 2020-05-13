@@ -5,6 +5,7 @@ LABEL maintainer="Piasy Xu (xz4215@gmail.com)"
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -y && apt-get install -y htop iftop unzip git wget curl \
+    vim openjdk-8-jdk-headless \
     # needed for webrtc env
     lsb-release sudo python-pip tzdata
 
