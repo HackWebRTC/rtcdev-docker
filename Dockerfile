@@ -53,15 +53,17 @@ RUN cd ~ && \
     ./scripts/installDepsUnattended.sh && \
     npm install -g node-gyp graceful-fs grunt-cli && \
     ./scripts/build.js -t mcu --check && \
-    rm -rf owt-server-4.3 node-v8.15.1-linux-x64.tar.gz && \
-    #
-    # Clean up
-    apt-get autoremove -y && \
+    rm -rf owt-server-4.3 node-v8.15.1-linux-x64.tar.gz
+
+# prepare vscode debug env
+RUN apt-get install -y gdb
+COPY vscode-server-0-28-0.zip /root/
+RUN cd ~ && \
+    unzip vscode-server-0-28-0.zip && \
+    rm -f vscode-server-0-28-0.zip
+
+# clean up
+RUN  apt-get autoremove -y && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists/*
 
-# prepare vscode env
-COPY vscode-server.zip /root/
-RUN cd ~ && \
-    unzip vscode-server.zip && \
-    rm -f vscode-server.zip
