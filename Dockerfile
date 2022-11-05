@@ -1,11 +1,11 @@
-FROM ubuntu:bionic
+FROM ubuntu:jammy
 LABEL maintainer="Piasy Xu (xz4215@gmail.com)"
 
 # Avoid warnings by switching to noninteractive
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -y && apt-get install -y htop iftop unzip git wget curl \
-    vim openjdk-8-jdk-headless \
+    vim openjdk-8-jdk-headless file \
     # needed for webrtc env
     lsb-release sudo python-pip tzdata
 
@@ -21,11 +21,9 @@ RUN cd ~ && \
     rm -rf libfaketime
 
 # prepare webrtc env
+COPY install-build-deps.sh /root/
+COPY install-build-deps-android.sh /root/
 RUN cd ~ && \
-    curl https://chromium.googlesource.com/chromium/src/+/master/build/install-build-deps-android.sh?format=TEXT \
-        | base64 -d > install-build-deps-android.sh && \
-    curl https://chromium.googlesource.com/chromium/src/+/master/build/install-build-deps.sh?format=TEXT \
-        | base64 -d > install-build-deps.sh && \
     chmod +x ./install-build-deps.sh && \
     chmod +x ./install-build-deps-android.sh && \
     echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula \
@@ -36,31 +34,31 @@ RUN cd ~ && \
     rm -rf install-build-deps.sh install-build-deps-android.sh
 
 # prepare owt env
-RUN cd ~ && \
-    wget https://nodejs.org/dist/v8.15.1/node-v8.15.1-linux-x64.tar.gz && \
-    mkdir -p /usr/local/lib/nodejs && \
-    tar xf node-v8.15.1-linux-x64.tar.gz -C /usr/local/lib/nodejs && \
-    echo 'export PATH=/usr/local/lib/nodejs/node-v8.15.1-linux-x64/bin:$PATH' \
-        >> ~/.bashrc && \
-    export PATH=/usr/local/lib/nodejs/node-v8.15.1-linux-x64/bin:$PATH && \
-    cd ~ && \
-    git config --global user.name test && \
-    git config --global user.email test@example.com && \
-    git clone https://github.com/open-webrtc-toolkit/owt-server.git \
-    owt-server-4.3 && \
-    cd owt-server-4.3 && \
-    git checkout 4.3.x && \
-    ./scripts/installDepsUnattended.sh && \
-    npm install -g node-gyp graceful-fs grunt-cli && \
-    ./scripts/build.js -t mcu --check && \
-    rm -rf owt-server-4.3 node-v8.15.1-linux-x64.tar.gz
+# RUN cd ~ && \
+#     wget https://nodejs.org/dist/v8.15.1/node-v8.15.1-linux-x64.tar.gz && \
+#     mkdir -p /usr/local/lib/nodejs && \
+#     tar xf node-v8.15.1-linux-x64.tar.gz -C /usr/local/lib/nodejs && \
+#     echo 'export PATH=/usr/local/lib/nodejs/node-v8.15.1-linux-x64/bin:$PATH' \
+#         >> ~/.bashrc && \
+#     export PATH=/usr/local/lib/nodejs/node-v8.15.1-linux-x64/bin:$PATH && \
+#     cd ~ && \
+#     git config --global user.name test && \
+#     git config --global user.email test@example.com && \
+#     git clone https://github.com/open-webrtc-toolkit/owt-server.git \
+#     owt-server-4.3 && \
+#     cd owt-server-4.3 && \
+#     git checkout 4.3.x && \
+#     ./scripts/installDepsUnattended.sh && \
+#     npm install -g node-gyp graceful-fs grunt-cli && \
+#     ./scripts/build.js -t mcu --check && \
+#     rm -rf owt-server-4.3 node-v8.15.1-linux-x64.tar.gz
 
 # prepare vscode debug env
-RUN apt-get install -y gdb
-COPY vscode-server-0-28-0.zip /root/
-RUN cd ~ && \
-    unzip vscode-server-0-28-0.zip && \
-    rm -f vscode-server-0-28-0.zip
+# RUN apt-get install -y gdb
+# COPY vscode-server-0-28-0.zip /root/
+# RUN cd ~ && \
+#     unzip vscode-server-0-28-0.zip && \
+#     rm -f vscode-server-0-28-0.zip
 
 # clean up
 RUN  apt-get autoremove -y && \
