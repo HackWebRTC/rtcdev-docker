@@ -33,6 +33,12 @@ RUN cd ~ && \
         >> /root/.bashrc && \
     rm -rf install-build-deps.sh install-build-deps-android.sh
 
+SHELL ["/bin/bash", "-c"]
+RUN touch ~/.bashrc && chmod +x ~/.bashrc
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+RUN . ~/.nvm/nvm.sh && source ~/.bashrc && nvm install 16
+RUN apt-get install -y python3-pip
+
 # prepare owt env
 # RUN cd ~ && \
 #     wget https://nodejs.org/dist/v8.15.1/node-v8.15.1-linux-x64.tar.gz && \
